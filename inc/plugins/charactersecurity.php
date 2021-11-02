@@ -144,6 +144,12 @@ function charactersecurity_misc() {
     $mybb->input['action'] = $mybb->get_input('action');
     if($mybb->input['action'] == "charasecure") {
 
+                // GÄSTE KÖNNEN DEN INHALT NICHT SEHEN
+        if($mybb->user['uid'] == 0)
+        {
+            error_no_permission();
+        } 
+        
         class finalPDF extends cSPDF
         {
 
