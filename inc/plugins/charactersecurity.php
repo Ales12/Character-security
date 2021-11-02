@@ -208,6 +208,7 @@ function charactersecurity_misc() {
                 $charauf = $db->fetch_array($charaquery);
 
                 $charainfo = $charauf[$fid];
+                $charainfo = utf8_decode($charainfo);
                 // post
                 $pdf->SetFont('Calibri','',9);
                 // Strip BBCode from Message
