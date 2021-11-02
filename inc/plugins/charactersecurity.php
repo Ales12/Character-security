@@ -11,7 +11,7 @@ function charactersecurity_info()
 {
     return array(
         "name"			=> "Charaktersicherung",
-        "description"	=> "Ermöglicht Usern ihre Charaktere mit einem Klick zu sichern. Dieser Plugin basiert auf dem Post und Threads zu PDF Plugin von sparks fly.",
+        "description"	=> "Ermöglicht Usern ihre Charaktere mit einem Klick zu sichern.",
         "website"		=> "",
         "author"		=> "Ales",
         "authorsite"	=> "",
@@ -102,7 +102,7 @@ function charactersecurity_activate()
     global $db;
 
     include MYBB_ROOT."/inc/adminfunctions_templates.php";
-    find_replace_templatesets("member_profile", "#".preg_quote('{$online_status}')."#i", '{$charasecure}{$online_status}');
+    find_replace_templatesets("member_profile", "#".preg_quote('{$online_status}')."#i", '{$charasecure}{$printthread}');
 }
 
 function charactersecurity_deactivate()
@@ -125,9 +125,7 @@ function charactersecurity_profile(){
 
     // aktive UID
     $active_uid = $mybb->user['uid'];
-
-
-if($memprofile['uid'] == $active_uid AND $active_uid != 0 OR $mybb->usergroup['canmodcp'] == 1){
+    if($memprofile['uid'] == $active_uid AND $active_uid != 0 OR $mybb->usergroup['canmodcp'] == 1){
         eval("\$charasecure = \"".$templates->get("charasecure_profile")."\";");
     } else {
         $charasecure = "";
@@ -162,7 +160,7 @@ function charactersecurity_misc() {
         $chara = get_user($uid);
 
         // Geburtstag richtig formatieren
-        
+
             $membday = explode("-", $chara['birthday']);
             $bdayformat = fix_mktime($mybb->settings['dateformat'], $membday[2]);
             $membday = mktime(0, 0, 0, $membday[1], $membday[0], $membday[2]);
@@ -173,16 +171,16 @@ function charactersecurity_misc() {
         $pdf->AliasNbPages();
 
         // content pages
-        $pdf->title = $chara['username'];
+        $pdf->username = $chara['username'];
         $pdf->AddPage();
-        $pdf->AddFont('DejaVu','','DejaVuSansCondensed.ttf',true);
-        $pdf->SetFont('Arial','B',14);
-        $pdf->SetY(30);
-        $pdf->MultiCell(185,10,$chara['username'],0,'C');
+        $pdf->AddFont('Arial','','ARIAL.TTF',true);
+        $pdf->AddFont('Calibri','','CALIBRI.TTF',true);
+        $pdf->SetFont('Arial','B',20);
+        $pdf->SetY(20);
+        $pdf->MultiCell(185,5,$chara['username'],0,'C');
         $pdf->SetFont('Arial','',10);
-        $pdf->MultiCell(185,10,"Charaktergeburtstag: ".$membday,0,'C');
+        $pdf->MultiCell(185,5,"Charaktergeburtstag: ".$membday,0,'C');
 
-        $pdf->title = $chara['username'];
         $profilefields = explode(", ", $profilefields);
 
         foreach ($profilefields as $profilefield) {
@@ -192,12 +190,11 @@ function charactersecurity_misc() {
             ORDER BY fid ASC");
             while ($post = $db->fetch_array($pfquery)) {
 
+                // Namen der Profilfelder ausgeben
                 $pdf->profilefields = $post['name'];
-
-                // author
-                $pdf->SetFont('DejaVu','',12);
-                $pdf->SetX(30);
-                $pdf->Cell(40, 10, $post['name']);
+                $pdf->SetFont('Calibri','B',12);
+                $pdf->SetX(20);
+                $pdf->Cell(20, 5, $post['name']);
 
                 $pdf->ln();
                 $fid = "fid".$profilefield;
@@ -209,24 +206,24 @@ function charactersecurity_misc() {
                 $charauf = $db->fetch_array($charaquery);
 
                 $charainfo = $charauf[$fid];
-                // post
-                $pdf->SetFont('DejaVu','',9);
+                // Profilfelder auslesen
+                $pdf->SetFont('Calibri','',9);
                 // Strip BBCode from Message
                 $pattern = '|[[\/\!]*?[^\[\]]*?]|si';
                 $replace = '';
                 $charainfo = preg_replace($pattern, $replace, $charainfo);
-                $pdf->SetX(30);
-                $pdf->MultiCell(150, 5, strip_tags($charainfo));
+                $pdf->SetX(20);
+                $pdf->MultiCell(170, 5, strip_tags($charainfo));
 
                 $pdf->ln();
 
             }
 
-
         }
+
         $title =  $chara['username'];
 
-        $pdf->Output('I', $title.'.pdf');
-    }
+    $pdf->Output('I', $title.'.pdf');
+}
 }
 
