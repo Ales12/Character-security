@@ -148,14 +148,6 @@ function charactersecurity_misc() {
 
         class finalPDF extends cSPDF
         {
-            // Page header
-            function Header()
-            {
-                $this->SetFont('Courier','',9);
-                $this->Cell(80);
-                $this->Cell(30,10,$this->username,0,0,'C');
-                $this->Ln(20);
-            }
 
             // Page footer
             function Footer()
