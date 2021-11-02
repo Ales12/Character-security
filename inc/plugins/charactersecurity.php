@@ -169,6 +169,12 @@ function charactersecurity_misc() {
         $uid = (int)$mybb->input['uid'];
         $chara = get_user($uid);
 
+        // Geburtstag richtig formatieren
+        
+            $membday = explode("-", $chara['birthday']);
+            $bdayformat = fix_mktime($mybb->settings['dateformat'], $membday[2]);
+            $membday = mktime(0, 0, 0, $membday[1], $membday[0], $membday[2]);
+            $membday = date($bdayformat, $membday);
 
         // generate pdf
         $pdf = new finalPDF();
@@ -182,7 +188,7 @@ function charactersecurity_misc() {
         $pdf->SetY(30);
         $pdf->MultiCell(185,10,$chara['username'],0,'C');
         $pdf->SetFont('Arial','',10);
-        $pdf->MultiCell(185,10,"Charaktergeburtstag: ".$chara['birthday'],0,'C');
+        $pdf->MultiCell(185,10,"Charaktergeburtstag: ".$membday,0,'C');
 
         $pdf->title = $chara['username'];
         $profilefields = explode(", ", $profilefields);
