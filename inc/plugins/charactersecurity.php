@@ -175,6 +175,7 @@ function charactersecurity_misc() {
         $pdf->AddPage();
         $pdf->AddFont('Arial','','ARIAL.TTF',true);
         $pdf->AddFont('Calibri','','CALIBRI.TTF',true);
+        $pdf->AddFont('Calibrib','B','CALIBRIB.TTF',true);
         $pdf->SetFont('Arial','B',20);
         $pdf->SetY(20);
         $pdf->MultiCell(185,5,$chara['username'],0,'C');
@@ -190,9 +191,10 @@ function charactersecurity_misc() {
             ORDER BY fid ASC");
             while ($post = $db->fetch_array($pfquery)) {
 
-                // Namen der Profilfelder ausgeben
                 $pdf->profilefields = $post['name'];
-                $pdf->SetFont('Calibri','B',12);
+
+                // author
+                $pdf->SetFont('Calibrib','B',12);
                 $pdf->SetX(20);
                 $pdf->Cell(20, 5, $post['name']);
 
@@ -206,7 +208,7 @@ function charactersecurity_misc() {
                 $charauf = $db->fetch_array($charaquery);
 
                 $charainfo = $charauf[$fid];
-                // Profilfelder auslesen
+                // post
                 $pdf->SetFont('Calibri','',9);
                 // Strip BBCode from Message
                 $pattern = '|[[\/\!]*?[^\[\]]*?]|si';
@@ -219,7 +221,9 @@ function charactersecurity_misc() {
 
             }
 
+
         }
+
 
         $title =  $chara['username'];
 
