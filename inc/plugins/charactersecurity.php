@@ -127,10 +127,10 @@ function charactersecurity_profile(){
     $active_uid = $mybb->user['uid'];
 
 
-    if($memprofile['uid'] == $active_uid){
+if($memprofile['uid'] == $active_uid AND $active_uid != 0 OR $mybb->usergroup['canmodcp'] == 1){
         eval("\$charasecure = \"".$templates->get("charasecure_profile")."\";");
-    } elseif($mybb->usergroup['canmodcp'] = 1){
-        eval("\$charasecure = \"".$templates->get("charasecure_profile")."\";");
+    } else {
+        $charasecure = "";
     }
 
 }
