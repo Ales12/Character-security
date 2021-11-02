@@ -102,7 +102,7 @@ function charactersecurity_activate()
     global $db;
 
     include MYBB_ROOT."/inc/adminfunctions_templates.php";
-    find_replace_templatesets("member_profile", "#".preg_quote('{$online_status}')."#i", '{$charasecure}{$printthread}');
+    find_replace_templatesets("member_profile", "#".preg_quote('{$online_status}')."#i", '{$charasecure}{$online_status}');
 }
 
 function charactersecurity_deactivate()
