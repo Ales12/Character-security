@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: text/html; charset=UTF-8');
+
 // Disallow direct access to this file for security reasons
 if(!defined("IN_MYBB"))
 {
