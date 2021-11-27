@@ -124,12 +124,17 @@ function charactersecurity_profile(){
     $lang->load('charactersecurity');
 
     // aktive UID
-    $active_uid = $mybb->user['uid'];
-    if($memprofile['uid'] == $active_uid AND $active_uid != 0 OR $mybb->usergroup['canmodcp'] == 1){
-        eval("\$charasecure = \"".$templates->get("charasecure_profile")."\";");
+    if($mybb->user['uid'] != 0) {
+        $active_uid = $mybb->user['uid'];
+        if ($memprofile['uid'] == $active_uid and $active_uid != 0 or $mybb->usergroup['canmodcp'] == 1) {
+            eval("\$charasecure = \"" . $templates->get("charasecure_profile") . "\";");
+        } else {
+            $charasecure = "";
+        }
     } else {
-        $charasecure = "";
+        $active_uid = 0;
     }
+
 
 }
 
@@ -143,13 +148,11 @@ function charactersecurity_misc() {
 
     $mybb->input['action'] = $mybb->get_input('action');
     if($mybb->input['action'] == "charasecure") {
-
-                // GÄSTE KÖNNEN DEN INHALT NICHT SEHEN
+        // GÄSTE KÖNNEN DEN INHALT NICHT SEHEN
         if($mybb->user['uid'] == 0)
         {
             error_no_permission();
-        } 
-        
+        }
         class finalPDF extends cSPDF
         {
 
@@ -167,10 +170,10 @@ function charactersecurity_misc() {
 
         // Geburtstag richtig formatieren
 
-            $membday = explode("-", $chara['birthday']);
-            $bdayformat = fix_mktime($mybb->settings['dateformat'], $membday[2]);
-            $membday = mktime(0, 0, 0, $membday[1], $membday[0], $membday[2]);
-            $membday = date($bdayformat, $membday);
+        $membday = explode("-", $chara['birthday']);
+        $bdayformat = fix_mktime($mybb->settings['dateformat'], $membday[2]);
+        $membday = mktime(0, 0, 0, $membday[1], $membday[0], $membday[2]);
+        $membday = date($bdayformat, $membday);
 
         // generate pdf
         $pdf = new finalPDF();
@@ -180,13 +183,40 @@ function charactersecurity_misc() {
         $pdf->username = $chara['username'];
         $pdf->AddPage();
         $pdf->AddFont('Arial','','ARIAL.TTF',true);
+        $pdf->AddFont('Arialb','B','ARIALBD.TTF',true);
         $pdf->AddFont('Calibri','','CALIBRI.TTF',true);
         $pdf->AddFont('Calibrib','B','CALIBRIB.TTF',true);
         $pdf->SetFont('Arial','B',20);
         $pdf->SetY(20);
+
+        // Oben Usernamen ausgeben
         $pdf->MultiCell(185,5,$chara['username'],0,'C');
-        $pdf->SetFont('Arial','',10);
-        $pdf->MultiCell(185,5,"Charaktergeburtstag: ".$membday,0,'C');
+
+        // Geburtstag auslesen
+        $pdf->SetFont('Calibrib','B',12);
+        $pdf->SetX(20);
+        $pdf->MultiCell(185, 5, "Geburtstag");
+        $pdf->SetFont('Calibri','',9);
+        $pdf->SetX(20);
+        $pdf->MultiCell(170, 5, $membday);
+        $pdf->ln();
+
+        // Beruf auslesen
+        $job_query = $db->query("SELECT name
+        FROM ".TABLE_PREFIX."jobs
+        where jid = '".$chara['jid']."'
+        ");
+
+        $jobselect = $db->fetch_array($job_query);
+        $jobplace = $jobselect['name'];
+
+        $pdf->SetFont('Calibrib','B',12);
+        $pdf->SetX(20);
+        $pdf->MultiCell(185, 5, "Job");
+        $pdf->SetFont('Calibri','',9);
+        $pdf->SetX(20);
+        $pdf->MultiCell(170, 5, $chara['job']." (".$jobplace.")");
+        $pdf->ln();
 
         $profilefields = explode(", ", $profilefields);
 
@@ -199,7 +229,7 @@ function charactersecurity_misc() {
 
                 $pdf->profilefields = $post['name'];
 
-                // author
+                // profilfeldname auslesen
                 $pdf->SetFont('Calibrib','B',12);
                 $pdf->SetX(20);
                 $pdf->Cell(20, 5, $post['name']);
@@ -214,9 +244,9 @@ function charactersecurity_misc() {
                 $charauf = $db->fetch_array($charaquery);
 
                 $charainfo = $charauf[$fid];
-                // post
+                // userfeld auslesen
                 $pdf->SetFont('Calibri','',9);
-                // Strip BBCode from Message
+                // BBcodes entfernen
                 $pattern = '|[[\/\!]*?[^\[\]]*?]|si';
                 $replace = '';
                 $charainfo = preg_replace($pattern, $replace, $charainfo);
@@ -233,7 +263,7 @@ function charactersecurity_misc() {
 
         $title =  $chara['username'];
 
-    $pdf->Output('I', $title.'.pdf');
-}
+        $pdf->Output('I', $title.'.pdf');
+    }
 }
 
