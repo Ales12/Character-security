@@ -167,13 +167,14 @@ function charactersecurity_misc() {
 
         $uid = (int)$mybb->input['uid'];
         $chara = get_user($uid);
-
+        $membday = "";
         // Geburtstag richtig formatieren
-
-        $membday = explode("-", $chara['birthday']);
-        $bdayformat = fix_mktime($mybb->settings['dateformat'], $membday[2]);
-        $membday = mktime(0, 0, 0, $membday[1], $membday[0], $membday[2]);
-        $membday = date($bdayformat, $membday);
+        if($chara['birthday']) {
+            $membday = explode("-", $chara['birthday']);
+            $bdayformat = fix_mktime($mybb->settings['dateformat'], $membday[2]);
+            $membday = mktime(0, 0, 0, $membday[1], $membday[0], $membday[2]);
+            $membday = date($bdayformat, $membday);
+        }
 
         // generate pdf
         $pdf = new finalPDF();
